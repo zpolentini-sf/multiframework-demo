@@ -1,0 +1,34 @@
+# Salesforce
+.sf/
+.sfdx/
+.localdevserver/
+deploy-options.json
+
+# Dependencies
+node_modules/
+
+# UIBundle build artifacts
+**/uiBundles/**/dist/
+**/uiBundles/**/.vite/
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local env
+.env
+.env.local
+
+# Coverage
+coverage/
+
+# Misc
+.eslintcache
+.pmdCache

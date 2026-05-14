@@ -1,0 +1,14 @@
+{
+  "unevaluatedProperties" : false,
+  "properties" : {
+    "opportunitiesSummary" : {
+      "title" : "Opportunities Summary",
+      "description" : "JSON array of open opportunities with name, account, stage, amount, closeDate, overdue flag, daysUntilClose, probability, nextStep, and daysSinceActivity.",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isDisplayable" : false,
+      "copilotAction:isUsedByPlanner" : true
+    }
+  },
+  "lightning:type" : "lightning__objectType"
+}

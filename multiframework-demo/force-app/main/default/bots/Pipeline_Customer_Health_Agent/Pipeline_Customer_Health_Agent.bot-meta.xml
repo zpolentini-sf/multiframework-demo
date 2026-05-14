@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bot xmlns="http://soap.sforce.com/2006/04/metadata">
+    <agentDSLEnabled>true</agentDSLEnabled>
+    <agentType>AgentforceEmployeeAgent</agentType>
+    <botMlDomain>
+        <label>Pipeline &amp; Customer Health Agent</label>
+        <name>Pipeline_Customer_Health_Agent</name>
+    </botMlDomain>
+    <botSource>None</botSource>
+    <description>Helps sales reps prioritize their open pipeline and analyze customer token consumption health. Identifies top opportunities for the week, surfaces accounts ready for upsell, and flags at-risk accounts with low token adoption.</description>
+    <label>Pipeline &amp; Customer Health Agent</label>
+    <logPrivateConversationData>false</logPrivateConversationData>
+    <richContentEnabled>true</richContentEnabled>
+    <sessionTimeout>0</sessionTimeout>
+    <type>InternalCopilot</type>
+</Bot>

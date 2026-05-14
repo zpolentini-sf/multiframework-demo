@@ -1,0 +1,24 @@
+query GetQuotes($status: Picklist, $first: Int) {
+  uiapi {
+    query {
+      Quote(
+        first: $first
+        where: { Status: { eq: $status } }
+        orderBy: { LastModifiedDate: { order: DESC } }
+      ) {
+        edges {
+          node {
+            Id
+            Name { value }
+            Status { value }
+            GrandTotal { value displayValue }
+            ExpirationDate { value }
+            Opportunity {
+              Name { value }
+            }
+          }
+        }
+      }
+    }
+  }
+}

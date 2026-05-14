@@ -1,0 +1,22 @@
+query GetPipelineOpps($first: Int) {
+  uiapi {
+    query {
+      Opportunity(
+        first: $first
+        where: { IsClosed: { eq: false } }
+        orderBy: { Amount: { order: DESC, nulls: LAST } }
+      ) {
+        edges {
+          node {
+            Id
+            Name { value }
+            Amount { value displayValue }
+            StageName { value }
+            CloseDate { value }
+            Account { Name { value } }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPlannerBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Helps sales reps prioritize their open pipeline and analyze customer token consumption health. Identifies top opportunities for the week, surfaces accounts ready for upsell, and flags at-risk accounts with low token adoption.</description>
+    <localTopicLinks>
+        <genAiPluginName>customer_token_health_16jV9000000KnML</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>escalation_16jV9000000KnML</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>off_topic_16jV9000000KnML</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>pipeline_prioritization_16jV9000000KnML</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>topic_selector_16jV9000000KnML</genAiPluginName>
+    </localTopicLinks>
+    <localTopics>
+        <fullName>topic_selector_16jV9000000KnML</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Greet the user and route to the correct topic based on their question about pipeline priorities or customer token health.</description>
+        <developerName>topic_selector_16jV9000000KnML</developerName>
+        <genAiPluginInstructions>
+            <description>You are the Pipeline &amp; Customer Health Agent for Harvey.ai. You help sales reps understand their open pipeline priorities and the health of their customer accounts based on token usage data. Be concise, specific, and data-driven. When presenting opportunity or account data, format it clearly with names, amounts, and key metrics. Always give actionable recommendations.</description>
+            <developerName>instruction0_179V9000000YT1F</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179V9000000YT1F</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localDeveloperName>topic_selector</localDeveloperName>
+        <masterLabel>Topic Selector</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>off_topic_16jV9000000KnML</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Redirect conversation to relevant topics when the user&apos;s request is unrelated to pipeline management or customer token health.</description>
+        <developerName>off_topic_16jV9000000KnML</developerName>
+        <genAiPluginInstructions>
+            <description>You are the Pipeline &amp; Customer Health Agent for Harvey.ai. You help sales reps understand their open pipeline priorities and the health of their customer accounts based on token usage data. Be concise, specific, and data-driven. When presenting opportunity or account data, format it clearly with names, amounts, and key metrics. Always give actionable recommendations.</description>
+            <developerName>instruction0_179V9000000YT1E</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179V9000000YT1E</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localDeveloperName>off_topic</localDeveloperName>
+        <masterLabel>Off Topic</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>customer_token_health_16jV9000000KnML</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Analyzes account-level token usage to identify expansion candidates (high login, moderate usage), at-risk accounts (low usage or low login), and accounts near their token limit.</description>
+        <developerName>customer_token_health_16jV9000000KnML</developerName>
+        <genAiPluginInstructions>
+            <description>You are the Pipeline &amp; Customer Health Agent for Harvey.ai. You help sales reps understand their open pipeline priorities and the health of their customer accounts based on token usage data. Be concise, specific, and data-driven. When presenting opportunity or account data, format it clearly with names, amounts, and key metrics. Always give actionable recommendations.</description>
+            <developerName>instruction0_179V9000000YT1D</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179V9000000YT1D</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localActionLinks>
+            <functionName>get_token_usage_summary_179V9000000YT1D</functionName>
+        </localActionLinks>
+        <localActions>
+            <fullName>get_token_usage_summary_179V9000000YT1D</fullName>
+            <description>Retrieves account-level token consumption data categorized as expansion candidates (high login rate, moderate usage), at-risk accounts (low usage or low login), and near-limit accounts. Call this to analyze customer health.</description>
+            <developerName>get_token_usage_summary_179V9000000YT1D</developerName>
+            <invocationTarget>GetTokenUsageSummaryAction</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>get_token_usage_summary</localDeveloperName>
+            <masterLabel>Get Token Usage Summary</masterLabel>
+            <progressIndicatorMessage>Analyzing customer token health...</progressIndicatorMessage>
+        </localActions>
+        <localDeveloperName>customer_token_health</localDeveloperName>
+        <masterLabel>Customer Token Health</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>escalation_16jV9000000KnML</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Handles requests from users who want to transfer or escalate their conversation to a live human agent.</description>
+        <developerName>escalation_16jV9000000KnML</developerName>
+        <genAiPluginInstructions>
+            <description>You are the Pipeline &amp; Customer Health Agent for Harvey.ai. You help sales reps understand their open pipeline priorities and the health of their customer accounts based on token usage data. Be concise, specific, and data-driven. When presenting opportunity or account data, format it clearly with names, amounts, and key metrics. Always give actionable recommendations.</description>
+            <developerName>instruction0_179V9000000YT1C</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179V9000000YT1C</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localDeveloperName>escalation</localDeveloperName>
+        <masterLabel>Escalation</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>pipeline_prioritization_16jV9000000KnML</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Fetches open opportunities and helps the sales rep understand which deals to prioritize this week based on value, close date urgency, probability, and activity staleness.</description>
+        <developerName>pipeline_prioritization_16jV9000000KnML</developerName>
+        <genAiPluginInstructions>
+            <description>You are the Pipeline &amp; Customer Health Agent for Harvey.ai. You help sales reps understand their open pipeline priorities and the health of their customer accounts based on token usage data. Be concise, specific, and data-driven. When presenting opportunity or account data, format it clearly with names, amounts, and key metrics. Always give actionable recommendations.</description>
+            <developerName>instruction0_179V9000000YT1B</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179V9000000YT1B</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localActionLinks>
+            <functionName>get_open_opportunities_179V9000000YT1B</functionName>
+        </localActionLinks>
+        <localActions>
+            <fullName>get_open_opportunities_179V9000000YT1B</fullName>
+            <description>Retrieves open opportunities ranked by value, with close dates, stages, probability, next steps, and days since last activity. Call this to get current pipeline data before making recommendations.</description>
+            <developerName>get_open_opportunities_179V9000000YT1B</developerName>
+            <invocationTarget>GetOpenOpportunitiesAction</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>get_open_opportunities</localDeveloperName>
+            <masterLabel>Get Open Opportunities</masterLabel>
+            <progressIndicatorMessage>Fetching your open opportunities...</progressIndicatorMessage>
+        </localActions>
+        <localDeveloperName>pipeline_prioritization</localDeveloperName>
+        <masterLabel>Pipeline Prioritization</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <masterLabel>Pipeline &amp; Customer Health Agent</masterLabel>
+    <plannerSurfaces>
+        <adaptiveResponseAllowed>true</adaptiveResponseAllowed>
+        <callRecordingAllowed>false</callRecordingAllowed>
+        <surface>SurfaceAction__Messaging</surface>
+        <surfaceType>Messaging</surfaceType>
+    </plannerSurfaces>
+    <plannerType>Atlas__ConcurrentMultiAgentOrchestration</plannerType>
+</GenAiPlannerBundle>

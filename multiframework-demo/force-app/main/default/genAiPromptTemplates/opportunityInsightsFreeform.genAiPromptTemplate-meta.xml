@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPromptTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <masterLabel>Opportunity Insights Freeform</masterLabel>
+    <templateVersions>
+        <content>{!$Input:prompt}</content>
+        <inputs>
+            <apiName>prompt</apiName>
+            <definition>primitive://String</definition>
+            <masterLabel>Prompt</masterLabel>
+            <referenceName>Input:prompt</referenceName>
+            <required>true</required>
+        </inputs>
+        <status>Published</status>
+    </templateVersions>
+    <type>einstein_gpt__flex</type>
+    <visibility>Global</visibility>
+</GenAiPromptTemplate>

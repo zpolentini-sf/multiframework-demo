@@ -1,0 +1,74 @@
+query GetOpportunities($first: Int, $after: String) {
+  uiapi {
+    query {
+      Opportunity(
+        first: $first
+        after: $after
+        orderBy: { CloseDate: { order: DESC } }
+      ) {
+        edges {
+          cursor
+          node {
+            Id
+            Name {
+              value
+            }
+            Amount {
+              value
+              displayValue
+            }
+            StageName {
+              value
+            }
+            CloseDate {
+              value
+            }
+            Probability {
+              value
+            }
+            Type {
+              value
+            }
+            LeadSource {
+              value
+            }
+            Description {
+              value
+            }
+            NextStep {
+              value
+            }
+            Account {
+              Id
+              Name {
+                value
+              }
+              Industry {
+                value
+              }
+            }
+            Owner {
+              Id
+              Name {
+                value
+              }
+            }
+            CreatedDate {
+              value
+            }
+            LastModifiedDate {
+              value
+            }
+          }
+        }
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          startCursor
+          endCursor
+        }
+        totalCount
+      }
+    }
+  }
+}

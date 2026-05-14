@@ -1,0 +1,22 @@
+query GetTasks($taskType: Picklist, $first: Int) {
+  uiapi {
+    query {
+      Task(
+        first: $first
+        where: { Type: { eq: $taskType } }
+        orderBy: { ActivityDate: { order: DESC, nulls: LAST } }
+      ) {
+        edges {
+          node {
+            Id
+            Subject { value }
+            Status { value }
+            Type { value }
+            ActivityDate { value }
+            Description { value }
+          }
+        }
+      }
+    }
+  }
+}
