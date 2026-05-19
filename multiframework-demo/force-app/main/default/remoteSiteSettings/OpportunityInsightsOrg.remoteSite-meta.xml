@@ -3,5 +3,5 @@
     <description>Allow Apex callouts back to the org for Einstein Prompt Template API</description>
     <disableProtocolSecurity>false</disableProtocolSecurity>
     <isActive>true</isActive>
-    <url>https://storm-08def2fb37789e--reactsand.sandbox.my.salesforce.com</url>
+    <url>https://YOUR-ORG-DOMAIN.my.salesforce.com</url>
 </RemoteSiteSetting>
