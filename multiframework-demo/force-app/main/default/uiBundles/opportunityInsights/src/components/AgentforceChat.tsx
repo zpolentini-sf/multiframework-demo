@@ -1,25 +1,42 @@
 import { useEffect, useRef, useState } from 'react';
 import { embedAgentforceClient } from '@salesforce/agentforce-conversation-client';
-import { ChevronDown, MessageSquare } from 'lucide-react';
+import { MessageSquare, X, ChevronDown, Check } from 'lucide-react';
 
-// Replace with the 18-digit ID from Setup → Agent Studio → Pipeline & Customer Health Agent URL
 const AGENT_ID = '0XxV90000001ZTZKA2';
-// Derive from the current page when running inside Salesforce; fall back for local dev
 const ORG_ORIGIN = window.location.origin;
 
-const MODELS = [
-  { id: 'claude', label: 'Claude Sonnet' },
-  { id: 'gpt4o', label: 'GPT-4o' },
-  { id: 'gemini', label: 'Gemini 1.5 Pro' },
-];
+const AGENTS = [
+  { id: 'agentforce', label: 'Agentforce',  tag: 'Salesforce', color: '#c9a96e' },
+  { id: 'opus',       label: 'Opus 4.7',    tag: 'Anthropic',  color: '#8b5cf6' },
+  { id: 'gpt',        label: 'GPT 5.5 Pro', tag: 'OpenAI',     color: '#10a37f' },
+] as const;
+type AgentId = typeof AGENTS[number]['id'];
 
-export function BottomChatBar() {
+export function AgentforceChat() {
   const containerRef = useRef<HTMLDivElement>(null);
   const mounted = useRef(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
-  const [selectedModel, setSelectedModel] = useState(MODELS[0].id);
-  const [modelOpen, setModelOpen] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState<AgentId>('agentforce');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!dropdownOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [dropdownOpen]);
+
+  // Prevent dropdown click from bubbling to backdrop
+  const stopProp = (e: React.MouseEvent) => e.stopPropagation();
+
+  // ACC iframe must always have real dimensions — use opacity/pointerEvents,
+  // never display:none or height:0 on the container.
   useEffect(() => {
     if (mounted.current || !containerRef.current) return;
     mounted.current = true;
@@ -30,56 +47,48 @@ export function BottomChatBar() {
         salesforceOrigin: ORG_ORIGIN,
         agentforceClientConfig: {
           agentId: AGENT_ID,
-          agentLabel: 'Pipeline Assistant',
           renderingConfig: {
             mode: 'inline',
             width: '100%',
             height: '100%',
-            headerEnabled: true,
+            headerEnabled: false,
             showAvatar: false,
           },
           styleTokens: {
-            // Container
-            containerBackground: '#0f0f0f',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif',
+            fontSize: '12px',
+            containerBackground: '#0b0b0b',
             chatBorderRadius: '0',
-            // Header
-            headerBlockBackground: '#0f0f0f',
-            headerBlockTextColor: '#f0ece6',
-            headerBlockFontSize: '13px',
-            headerBlockFontWeight: '500',
-            headerBlockBorderBottomWidth: '1px',
-            headerBlockBorderBottomStyle: 'solid',
-            headerBlockBorderBottomColor: '#252525',
-            headerBlockBorderRadius: '0',
-            headerBlockHoverBackground: '#1a1a1a',
-            headerBlockActiveBackground: '#1a1a1a',
-            headerBlockIconColor: '#c9a96e',
-            // Messages
             messageBlockBorderRadius: '6px',
-            messageBlockFontSize: '13px',
-            messageBlockLineHeight: '1.55',
-            messageBlockBackgroundColor: '#1a1a1a',
-            messageBlockOutboundBackgroundColor: '#1a1a1a',
+            messageBlockFontSize: '12px',
+            messageBlockLineHeight: '1.6',
+            messageBlockBackgroundColor: '#0b0b0b',
+            messageBlockOutboundBackgroundColor: '#161616',
             messageBlockOutboundTextColor: '#f0ece6',
-            messageBlockOutboundBorder: '1px solid #2e2e2e',
-            messageBlockInboundBackgroundColor: '#252525',
-            messageBlockInboundTextColor: '#f0ece6',
-            messageBlockInboundBorder: '1px solid #2e2e2e',
-            // Input
-            messageInputBorderRadius: '6px',
-            messageInputFontSize: '13px',
-            messageInputTextBackgroundColor: '#1a1a1a',
+            messageBlockOutboundBorder: '1px solid #252525',
+            messageBlockOutboundBorderRadius: '8px',
+            messageBlockInboundBackgroundColor: '#0b0b0b',
+            messageBlockInboundTextColor: '#c8c2ba',
+            messageBlockInboundBorder: 'none',
+            messageBlockPaddingContainer: '0 16px',
+            messageBlockContainerMarginTop: '8px',
+            avatarDisplay: 'none',
+            hideMessageActions: 'none',
+            hideCopyAction: 'none',
+            messageInputPadding: '10px 16px',
+            messageInputBorderRadius: '8px',
+            messageInputFontSize: '12px',
+            messageInputTextBackgroundColor: '#161616',
             messageInputTextColor: '#f0ece6',
             messageInputFooterBorderColor: '#252525',
             messageInputFooterBorderFocusColor: '#c9a96e',
             messageInputFocusShadow: 'none',
-            messageInputFooterPlaceholderText: '#6b6560',
+            messageInputFooterPlaceholderText: '#4a4540',
             messageInputPlaceholderFontWeight: '400',
             messageInputSendButtonIconColor: '#c9a96e',
             messageInputFooterSendButton: '#c9a96e',
             messageInputFooterSendButtonHoverColor: '#f0ece6',
-            messageInputSendButtonDisabledColor: '#3a3a3a',
-            // Error
+            messageInputSendButtonDisabledColor: '#2e2e2e',
             errorBlockBackground: '#1a0808',
           },
         },
@@ -89,169 +98,228 @@ export function BottomChatBar() {
     }
   }, []);
 
-  const currentModel = MODELS.find(m => m.id === selectedModel) ?? MODELS[0];
+  const agent = AGENTS.find(a => a.id === selectedAgent)!;
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 50,
-        borderTop: '1px solid #252525',
-        background: '#0f0f0f',
-        boxShadow: '0 -8px 40px rgba(0,0,0,0.6)',
-      }}
-    >
-      {/*
-        ACC panel: position:absolute above the bar so it never collapses the
-        container. The iframe always has real dimensions (320×full-width) so
-        Lightning Out can fire ready. opacity+pointer-events hide it visually
-        when closed — never use height:0 or display:none on the iframe wrapper.
-      */}
+    <>
+      {/* Backdrop */}
       <div
+        onClick={() => setOpen(false)}
         style={{
-          position: 'absolute',
-          bottom: 56,
-          left: 0,
-          right: 0,
-          height: 320,
-          overflow: 'hidden',
-          borderTop: '1px solid #252525',
-          borderBottom: '1px solid #252525',
-          background: '#0f0f0f',
+          position: 'fixed',
+          inset: 0,
+          zIndex: 40,
+          background: 'rgba(0,0,0,0.45)',
           opacity: open ? 1 : 0,
           pointerEvents: open ? 'all' : 'none',
-          transform: open ? 'translateY(0)' : 'translateY(8px)',
-          transition: 'opacity 0.18s ease, transform 0.18s ease',
+          transition: 'opacity 0.22s ease',
         }}
-      >
-        <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
-      </div>
+      />
 
-      {/* Bar */}
+      {/* Drawer */}
       <div
         style={{
-          height: 56,
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          width: 400,
+          zIndex: 50,
           display: 'flex',
-          alignItems: 'center',
-          padding: '0 16px',
-          gap: 12,
+          flexDirection: 'column',
+          background: '#0b0b0b',
+          borderLeft: '1px solid #252525',
+          boxShadow: '-12px 0 48px rgba(0,0,0,0.7)',
+          transform: open ? 'translateX(0)' : 'translateX(100%)',
+          transition: 'transform 0.26s cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       >
-        {/* Status dot + label */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-          <span
-            style={{
-              width: 7,
-              height: 7,
-              borderRadius: '50%',
-              background: '#c9a96e',
-              display: 'inline-block',
-              boxShadow: '0 0 6px #c9a96e88',
-            }}
-          />
-          <span style={{ fontSize: 13, fontWeight: 500, color: '#f0ece6', whiteSpace: 'nowrap' }}>
-            Pipeline Assistant
-          </span>
-        </div>
-
-        {/* Model selector */}
-        <div style={{ position: 'relative', flexShrink: 0 }}>
-          <button
-            onClick={() => setModelOpen(prev => !prev)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 5,
-              padding: '4px 10px',
-              borderRadius: 20,
-              border: '1px solid #2e2e2e',
-              background: '#1a1a1a',
-              color: '#9b9590',
-              fontSize: 11,
-              fontWeight: 500,
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {currentModel.label}
-            <ChevronDown size={10} />
-          </button>
-          {modelOpen && (
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 36,
-                left: 0,
-                background: '#1a1a1a',
-                border: '1px solid #2e2e2e',
-                borderRadius: 8,
-                overflow: 'hidden',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-                zIndex: 60,
-                minWidth: 140,
-              }}
-            >
-              {MODELS.map(m => (
-                <button
-                  key={m.id}
-                  onClick={() => { setSelectedModel(m.id); setModelOpen(false); }}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    textAlign: 'left',
-                    padding: '8px 14px',
-                    fontSize: 12,
-                    color: m.id === selectedModel ? '#c9a96e' : '#9b9590',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {m.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Spacer */}
-        <div style={{ flex: 1 }} />
-
-        {/* Toggle button */}
-        <button
-          onClick={() => setOpen(prev => !prev)}
+        {/* Drawer header */}
+        <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 7,
-            padding: '7px 14px',
-            borderRadius: 6,
-            border: '1px solid #2e2e2e',
-            background: open ? '#1e1e1e' : '#c9a96e',
-            color: open ? '#9b9590' : '#0b0b0b',
-            fontSize: 12,
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'background 0.15s ease',
+            justifyContent: 'space-between',
+            padding: '0 20px',
+            height: 56,
+            borderBottom: '1px solid #1e1e1e',
+            flexShrink: 0,
           }}
-          aria-label={open ? 'Collapse chat' : 'Open Pipeline Assistant'}
         >
-          {open ? (
-            <>
-              <ChevronDown size={13} />
-              Collapse
-            </>
-          ) : (
-            <>
-              <MessageSquare size={13} />
-              Ask Pipeline AI
-            </>
-          )}
-        </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{
+              width: 6, height: 6, borderRadius: '50%',
+              background: '#c9a96e', boxShadow: '0 0 8px #c9a96e99', flexShrink: 0,
+            }} />
+            <span style={{ fontSize: 13, fontWeight: 500, color: '#f0ece6', letterSpacing: '-0.01em' }}>
+              Pipeline Assistant
+            </span>
+          </div>
+          <button
+            onClick={() => setOpen(false)}
+            aria-label="Close chat"
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: 28, height: 28, borderRadius: 6,
+              border: '1px solid #252525', background: 'none',
+              color: '#6b6560', cursor: 'pointer',
+              transition: 'color 0.15s, border-color 0.15s',
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.color = '#f0ece6';
+              (e.currentTarget as HTMLButtonElement).style.borderColor = '#3a3a3a';
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.color = '#6b6560';
+              (e.currentTarget as HTMLButtonElement).style.borderColor = '#252525';
+            }}
+          >
+            <X size={14} />
+          </button>
+        </div>
+
+        {/* ACC container — always rendered with real dimensions */}
+        <div ref={containerRef} style={{ flex: 1, overflow: 'hidden', minHeight: 0 }} />
+
+        {/* Footer — agent selector sits visually below the ACC input bar */}
+        <div
+          style={{
+            flexShrink: 0,
+            padding: '8px 14px',
+            borderTop: '1px solid #1a1a1a',
+            background: '#0b0b0b',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
+          onClick={stopProp}
+        >
+          <span style={{ fontSize: 11, color: '#3a3a3a', letterSpacing: '0.04em' }}>Agent:</span>
+
+          <div ref={dropdownRef} style={{ position: 'relative' }}>
+            <button
+              onClick={() => setDropdownOpen(v => !v)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '5px 10px', borderRadius: 7,
+                border: `1px solid ${dropdownOpen ? '#3a3a3a' : '#252525'}`,
+                background: '#111',
+                cursor: 'pointer',
+                transition: 'border-color 0.15s',
+              }}
+            >
+              <span style={{
+                width: 6, height: 6, borderRadius: '50%',
+                background: agent.color,
+                boxShadow: `0 0 5px ${agent.color}88`,
+                flexShrink: 0,
+                transition: 'background 0.2s',
+              }} />
+              <span style={{ fontSize: 12, fontWeight: 500, color: '#f0ece6', letterSpacing: '-0.01em' }}>
+                {agent.label}
+              </span>
+              <span style={{ fontSize: 10, color: '#4a4540', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                {agent.tag}
+              </span>
+              <ChevronDown
+                size={11}
+                color="#4a4540"
+                style={{
+                  transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.15s ease',
+                }}
+              />
+            </button>
+
+            {/* Dropdown — opens upward */}
+            {dropdownOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: 'calc(100% + 6px)',
+                  left: 0,
+                  minWidth: 210,
+                  background: '#111',
+                  border: '1px solid #252525',
+                  borderRadius: 8,
+                  boxShadow: '0 -8px 32px rgba(0,0,0,0.6)',
+                  zIndex: 100,
+                  padding: '4px',
+                }}
+              >
+                {AGENTS.map(a => (
+                  <button
+                    key={a.id}
+                    onClick={() => { setSelectedAgent(a.id); setDropdownOpen(false); }}
+                    style={{
+                      width: '100%',
+                      display: 'flex', alignItems: 'center', gap: 10,
+                      padding: '9px 12px', borderRadius: 6,
+                      border: 'none',
+                      background: selectedAgent === a.id ? '#1a1a1a' : 'none',
+                      cursor: 'pointer', textAlign: 'left',
+                      transition: 'background 0.1s',
+                    }}
+                    onMouseEnter={e => {
+                      if (selectedAgent !== a.id)
+                        (e.currentTarget as HTMLButtonElement).style.background = '#161616';
+                    }}
+                    onMouseLeave={e => {
+                      if (selectedAgent !== a.id)
+                        (e.currentTarget as HTMLButtonElement).style.background = 'none';
+                    }}
+                  >
+                    <span style={{
+                      width: 7, height: 7, borderRadius: '50%',
+                      background: a.color, flexShrink: 0,
+                      boxShadow: selectedAgent === a.id ? `0 0 6px ${a.color}88` : 'none',
+                    }} />
+                    <span style={{ flex: 1 }}>
+                      <span style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#f0ece6', letterSpacing: '-0.01em' }}>
+                        {a.label}
+                      </span>
+                      <span style={{ display: 'block', fontSize: 10, color: '#4a4540', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: 1 }}>
+                        {a.tag}
+                      </span>
+                    </span>
+                    {selectedAgent === a.id && <Check size={12} color={a.color} strokeWidth={2.5} />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* FAB trigger */}
+      <button
+        onClick={() => setOpen(prev => !prev)}
+        aria-label={open ? 'Close Pipeline Assistant' : 'Open Pipeline Assistant'}
+        style={{
+          position: 'fixed',
+          bottom: 28,
+          right: 28,
+          zIndex: 60,
+          width: 48,
+          height: 48,
+          borderRadius: '50%',
+          border: 'none',
+          background: open ? '#1e1e1e' : '#c9a96e',
+          color: open ? '#6b6560' : '#0b0b0b',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          boxShadow: open
+            ? '0 2px 12px rgba(0,0,0,0.5)'
+            : '0 4px 20px rgba(201,169,110,0.35)',
+          transition: 'background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease',
+        }}
+        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.08)'; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)'; }}
+      >
+        <MessageSquare size={20} strokeWidth={1.75} />
+      </button>
+    </>
   );
 }

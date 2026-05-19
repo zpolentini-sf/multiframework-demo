@@ -47,93 +47,93 @@ const isOverdue = (dateStr: string | null | undefined) => {
   return new Date(dateStr) < new Date();
 };
 
+function ownerInitials(name: string): string {
+  return name.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
+}
+
 export function OpportunityCard({ opportunity, onClick, onUpdated }: OpportunityCardProps) {
   const [editOpen, setEditOpen] = useState(false);
 
   const closeDate = opportunity.CloseDate?.value
-    ? format(new Date(opportunity.CloseDate.value), 'MMM d, yyyy')
+    ? format(new Date(opportunity.CloseDate.value), 'MMM d')
     : '—';
 
   const overdue = isOverdue(opportunity.CloseDate?.value);
   const stage = opportunity.StageName?.value || 'Unknown';
   const prob = opportunity.Probability?.value;
+  const ownerName = opportunity.Owner?.Name?.value;
 
   return (
     <>
-      <div className="group relative rounded-lg border border-[#252525] bg-[#141414] hover:border-[#333] hover:bg-[#161616] transition-all duration-150 cursor-pointer overflow-hidden"
+      <div
+        className="group relative flex items-center gap-4 py-4 border-b border-[#1a1a1a] hover:bg-[#0e0e0e] transition-colors cursor-pointer"
         onClick={onClick}
       >
-        {/* Edit button */}
-        <button
-          onClick={(e) => { e.stopPropagation(); setEditOpen(true); }}
-          className="absolute top-3 right-3 p-1.5 rounded opacity-0 group-hover:opacity-100 text-[#6b6560] hover:text-[#f0ece6] hover:bg-[#252525] transition-all"
-          aria-label="Edit opportunity"
-        >
-          <Pencil className="h-3 w-3" />
-        </button>
+        {/* Left: name + account + stage */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-baseline gap-2 mb-1">
+            <h3 className="text-[14px] font-medium text-[#f0ece6] leading-snug truncate">
+              {opportunity.Name?.value || 'Untitled'}
+            </h3>
+          </div>
 
-        <div className="px-4 pt-4 pb-3">
-          {/* Name + account */}
-          <h3 className="text-[14px] font-medium text-[#f0ece6] leading-snug pr-6 truncate">
-            {opportunity.Name?.value || 'Untitled'}
-          </h3>
-          {opportunity.Account && (
-            <p className="mt-0.5 text-[12px] text-[#6b6560] truncate">
-              {opportunity.Account.Name?.value}
-              {opportunity.Account.Industry?.value && (
-                <span className="text-[#454040]"> · {opportunity.Account.Industry.value}</span>
-              )}
+          <div className="flex items-center gap-2 flex-wrap">
+            {opportunity.Account && (
+              <span className="text-[12px] text-[#6b6560] truncate max-w-[180px]">
+                {opportunity.Account.Name?.value}
+              </span>
+            )}
+            <span className={`inline-flex px-1.5 py-0.5 rounded border text-[10px] font-medium ${stageStyle(stage)}`}>
+              {stage}
+            </span>
+          </div>
+
+          {opportunity.NextStep?.value && (
+            <p className="text-[12px] text-[#454040] mt-1.5 truncate leading-relaxed">
+              {opportunity.NextStep.value}
             </p>
           )}
-
-          {/* Stage badge */}
-          <span className={`inline-flex mt-2 px-2 py-0.5 rounded border text-[11px] font-medium ${stageStyle(stage)}`}>
-            {stage}
-          </span>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-[#1e1e1e] mx-4" />
-
-        <div className="px-4 py-3 grid grid-cols-3 gap-3">
-          <div>
-            <p className="text-[10px] text-[#454040] uppercase tracking-wide mb-0.5">Amount</p>
+        {/* Right: amount + prob + close */}
+        <div className="flex items-center gap-5 shrink-0">
+          <div className="text-right hidden sm:block">
+            <p className="text-[10px] text-[#3a3530] uppercase tracking-wide mb-0.5">Prob.</p>
+            <p className="text-[12px] text-[#6b6560]">{prob != null ? `${prob}%` : '—'}</p>
+          </div>
+          <div className="text-right hidden sm:block">
+            <p className="text-[10px] text-[#3a3530] uppercase tracking-wide mb-0.5">Close</p>
+            <p className={`text-[12px] font-medium ${overdue ? 'text-red-400' : 'text-[#c8c2ba]'}`}>
+              {closeDate}
+              {overdue && <span className="ml-1 text-[9px] text-red-500/60">overdue</span>}
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] text-[#3a3530] uppercase tracking-wide mb-0.5">Amount</p>
             <p className="text-[13px] font-semibold text-[#c9a96e]">
               {formatCurrency(opportunity.Amount?.value ?? null, opportunity.Amount?.displayValue ?? null)}
             </p>
           </div>
-          <div>
-            <p className="text-[10px] text-[#454040] uppercase tracking-wide mb-0.5">Prob.</p>
-            <p className="text-[13px] font-medium text-[#c8c2ba]">
-              {prob != null ? `${prob}%` : '—'}
-            </p>
-          </div>
-          <div>
-            <p className="text-[10px] text-[#454040] uppercase tracking-wide mb-0.5">Close</p>
-            <p className={`text-[12px] font-medium ${overdue ? 'text-red-400' : 'text-[#c8c2ba]'}`}>
-              {closeDate}
-              {overdue && <span className="ml-1 text-[10px] text-red-500/70">overdue</span>}
-            </p>
-          </div>
-        </div>
 
-        {opportunity.NextStep?.value && (
-          <>
-            <div className="border-t border-[#1e1e1e] mx-4" />
-            <div className="px-4 py-3">
-              <p className="text-[10px] text-[#454040] uppercase tracking-wide mb-1">Next Step</p>
-              <p className="text-[12px] text-[#6b6560] line-clamp-2 leading-relaxed">{opportunity.NextStep.value}</p>
+          {/* Owner avatar */}
+          {ownerName && (
+            <div
+              title={ownerName}
+              className="w-7 h-7 rounded-full bg-[#1e1e1e] border border-[#252525] flex items-center justify-center shrink-0"
+            >
+              <span className="text-[10px] font-medium text-[#6b6560]">{ownerInitials(ownerName)}</span>
             </div>
-          </>
-        )}
+          )}
 
-        {opportunity.Owner && (
-          <div className="px-4 pb-3">
-            <p className="text-[11px] text-[#454040] truncate">
-              {opportunity.Owner.Name?.value}
-            </p>
-          </div>
-        )}
+          {/* Edit button */}
+          <button
+            onClick={(e) => { e.stopPropagation(); setEditOpen(true); }}
+            className="p-1.5 rounded opacity-0 group-hover:opacity-100 text-[#6b6560] hover:text-[#f0ece6] hover:bg-[#252525] transition-all shrink-0"
+            aria-label="Edit opportunity"
+          >
+            <Pencil className="h-3 w-3" />
+          </button>
+        </div>
       </div>
 
       {editOpen && (

@@ -26,6 +26,12 @@ Thumbs.db
 .env
 .env.local
 
+# MCP config (contains OAuth credentials)
+.mcp.json
+
+# Claude Code local settings
+.claude/
+
 # Coverage
 coverage/
 

@@ -1,6 +1,16 @@
+import { useState } from 'react';
 import { OpportunityList } from '../components/OpportunityList';
+import { OpportunitySpotlightCards } from '../components/OpportunitySpotlightCards';
+import { CustomerSuccessCards } from '../components/CustomerSuccessCards';
+import { OpportunityDetailDrawer } from '../components/OpportunityDetailDrawer';
+import { CustomerSuccessDetailDrawer } from '../components/CustomerSuccessDetailDrawer';
+import { OpportunitySpotlight } from '../api/opportunitySpotlight';
+import { CustomerSuccessHighlight } from '../api/customerSuccessData';
 
 export default function Home() {
+  const [selectedSpotlight, setSelectedSpotlight] = useState<OpportunitySpotlight | null>(null);
+  const [selectedProject, setSelectedProject] = useState<CustomerSuccessHighlight | null>(null);
+
   return (
     <div className="min-h-screen bg-[#0b0b0b]">
       {/* Page header */}
@@ -19,6 +29,13 @@ export default function Home() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
+        {/* Two-column intelligence feed — both columns have 3 cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <OpportunitySpotlightCards onSelect={setSelectedSpotlight} />
+          <CustomerSuccessCards onSelect={setSelectedProject} />
+        </div>
+
+        {/* Full-width opportunity list */}
         <OpportunityList
           onOpportunityClick={(opp) => {
             console.log('Opportunity clicked:', opp);
@@ -26,6 +43,17 @@ export default function Home() {
         />
       </div>
 
+      <OpportunityDetailDrawer
+        open={!!selectedSpotlight}
+        spotlight={selectedSpotlight}
+        primaryContact={null}
+        onClose={() => setSelectedSpotlight(null)}
+      />
+      <CustomerSuccessDetailDrawer
+        open={!!selectedProject}
+        highlight={selectedProject}
+        onClose={() => setSelectedProject(null)}
+      />
     </div>
   );
 }

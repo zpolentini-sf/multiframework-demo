@@ -53,6 +53,23 @@ query GetOpportunities($first: Int, $after: String) {
                 value
               }
             }
+            OpportunityContactRoles(
+              first: 1
+              where: { IsPrimary: { eq: true } }
+            ) {
+              edges {
+                node {
+                  Contact {
+                    Name {
+                      value
+                    }
+                    Email {
+                      value
+                    }
+                  }
+                }
+              }
+            }
             CreatedDate {
               value
             }

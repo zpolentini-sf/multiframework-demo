@@ -11,6 +11,7 @@ import type { TaskNode } from './ActivityCards';
 interface TaskDialogProps {
   task?: TaskNode;
   defaultType?: string;
+  prefilledSubject?: string;
   open: boolean;
   onClose: () => void;
   onSaved: () => void;
@@ -19,9 +20,9 @@ interface TaskDialogProps {
 const TASK_STATUSES = ['Not Started', 'In Progress', 'Completed', 'Waiting on someone else', 'Deferred'];
 const TASK_TYPES = ['Call', 'Email', 'Meeting'];
 
-export function TaskDialog({ task, defaultType, open, onClose, onSaved }: TaskDialogProps) {
+export function TaskDialog({ task, defaultType, prefilledSubject, open, onClose, onSaved }: TaskDialogProps) {
   const isEdit = !!task;
-  const [subject, setSubject] = useState(task?.Subject?.value ?? '');
+  const [subject, setSubject] = useState(task?.Subject?.value ?? prefilledSubject ?? '');
   const [status, setStatus] = useState(task?.Status?.value ?? 'Not Started');
   const [type, setType] = useState(task?.Type?.value ?? defaultType ?? 'Call');
   const [activityDate, setActivityDate] = useState(task?.ActivityDate?.value?.split('T')[0] ?? '');

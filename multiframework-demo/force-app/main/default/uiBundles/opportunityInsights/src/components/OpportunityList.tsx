@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { createDataSDK } from '@salesforce/sdk-data';
 import { OpportunityCard } from './OpportunityCard';
-import { PipelineInsightCards } from './PipelineInsightCards';
 import { Spinner } from './ui/spinner';
 import { AlertCircle } from 'lucide-react';
 
@@ -26,6 +25,16 @@ interface Opportunity {
   };
   NextStep?: { value: string | null };
   Description?: { value: string | null };
+  OpportunityContactRoles?: {
+    edges: Array<{
+      node: {
+        Contact: {
+          Name: { value: string };
+          Email: { value: string | null };
+        };
+      };
+    }>;
+  };
 }
 
 interface OpportunityListProps {
@@ -98,19 +107,16 @@ export function OpportunityList({ onOpportunityClick }: OpportunityListProps) {
 
   return (
     <div>
-      {/* AI Insight Cards */}
-      <PipelineInsightCards />
-
       {/* Section header */}
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between mb-3">
         <div>
           <h2 className="text-[15px] font-medium text-[#f0ece6] tracking-[-0.01em]">Open Opportunities</h2>
           <p className="text-[12px] text-[#6b6560] mt-0.5">{opportunities.length} opportunities</p>
         </div>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pb-8">
+      {/* Vertical list */}
+      <div className="flex flex-col pb-8">
         {opportunities.map((opp) => (
           <OpportunityCard
             key={opp.Id}

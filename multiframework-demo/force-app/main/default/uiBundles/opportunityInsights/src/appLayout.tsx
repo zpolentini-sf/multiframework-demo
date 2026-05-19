@@ -1,7 +1,7 @@
 import { Outlet, Link, useLocation } from 'react-router';
 import { getAllRoutes } from './router-utils';
 import { useState } from 'react';
-import { BottomChatBar } from './components/AgentforceChat';
+import { AgentforceChat } from './components/AgentforceChat';
 
 export default function AppLayout() {
   const [isOpen, setIsOpen] = useState(false);
@@ -89,10 +89,8 @@ export default function AppLayout() {
           )}
         </div>
       </header>
-      <div style={{ paddingBottom: 56 }}>
-        <Outlet />
-      </div>
-      <BottomChatBar />
+      <Outlet />
+      <AgentforceChat />
     </>
   );
 }
